@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Timetable - Timetable Generator{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Generate Timetable</h2>
+    <form method="POST" action="{{ url_for('generate_timetable', filename=filename) }}">
+        <div class="form-group">
+            <h4>Select Subjects to Include:</h4>
+            <div class="subject-checkboxes">
+                {% for subject in subjects %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" 
+                           id="subject-{{ loop.index }}" 
+                           name="subjects" 
+                           value="{{ subject }}"
+                           checked>
+                    <label class="form-check-label" for="subject-{{ loop.index }}">
+                        {{ subject }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Generate Timetable</button>
+    </form>
+</div>
+{% endblock %}

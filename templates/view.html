@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+
+{% block title %}View Files - Timetable Generator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .view-section {
+        padding: var(--spacing-xl) 0;
+        min-height: calc(100vh - 200px);
+        background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+    }
+
+    .card {
+        background: var(--glass-bg-light);
+        border-radius: 1.5rem;
+        padding: var(--spacing-xl);
+        margin-bottom: var(--spacing-lg);
+        box-shadow: var(--shadow-soft-light);
+        border: 1px solid var(--glass-border-light);
+        transition: all 0.3s ease;
+        animation: slideInUp 0.6s ease-out;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: var(--shadow-medium-light);
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: var(--spacing-md);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .card-title i {
+        color: var(--primary-light);
+        font-size: 1.25rem;
+    }
+
+    .table {
+        background: var(--glass-bg-light);
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: var(--shadow-soft-light);
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .table thead {
+        background: var(--gradient-primary-light);
+        color: white;
+    }
+
+    .table th {
+        padding: var(--spacing-md);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+    }
+
+    .table td {
+        padding: var(--spacing-md);
+        vertical-align: middle;
+        color: #374151;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background: rgba(129, 140, 248, 0.05);
+        transform: translateX(5px);
+    }
+
+    .btn-group {
+        display: flex;
+        gap: var(--spacing-sm);
+    }
+
+    .btn {
+        padding: var(--spacing-sm) var(--spacing-md);
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+    }
+
+    .btn-primary {
+        background: var(--gradient-primary-light);
+        color: white;
+        border: none;
+        box-shadow: var(--shadow-soft-light);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-medium-light);
+    }
+
+    .btn-outline-primary {
+        background: transparent;
+        border: 1px solid var(--primary-light);
+        color: var(--primary-light);
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--primary-light);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: var(--spacing-xl);
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--primary-light);
+        margin-bottom: var(--spacing-md);
+        animation: pulse 2s infinite;
+    }
+
+    .empty-state h4 {
+        color: #1f2937;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .empty-state p {
+        color: #6b7280;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .list-group {
+        background: transparent;
+        border: none;
+    }
+
+    .list-group-item {
+        background: transparent;
+        border: none;
+        padding: var(--spacing-sm) 0;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .list-group-item i {
+        color: var(--success-light);
+    }
+
+    .d-grid {
+        display: grid;
+        gap: var(--spacing-sm);
+    }
+
+    @media (max-width: 768px) {
+        .card {
+            padding: var(--spacing-md);
+        }
+
+        .table-responsive {
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .btn-group {
+            flex-direction: column;
+        }
+    }
+
+    .btn.loading {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
+    .alert {
+        border-radius: 0.5rem;
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+        animation: slideInDown 0.5s ease-out;
+    }
+
+    .alert-success {
+        background: var(--success-light);
+        color: #065f46;
+        border: 1px solid #34d399;
+    }
+
+    .alert-error {
+        background: var(--danger-light);
+        color: #991b1b;
+        border: 1px solid #f87171;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="view-section">
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <i class="fas fa-history" aria-hidden="true"></i>File History
+                </h2>
+
+                {% if uploaded_files %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">File Name</th>
+                                <th scope="col">Upload Date</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in uploaded_files %}
+                            <tr>
+                                <td>
+                                    <i class="fas fa-file-csv text-primary" aria-hidden="true"></i>
+                                    {{ file.name }}
+                                </td>
+                                <td>{{ file.uploaded_at }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('generate_timetable', filename=file.name) }}" 
+                                           class="btn btn-primary generate-btn"
+                                           onclick="handleGenerateClick(this, '{{ file.name }}')"
+                                           aria-label="Generate timetable for {{ file.name }}">
+                                            <i class="fas fa-calendar-plus" aria-hidden="true"></i>Generate
+                                        </a>
+                                        <a href="{{ url_for('download', filename=file.name) }}" 
+                                           class="btn btn-outline-primary"
+                                           onclick="this.classList.add('loading')"
+                                           aria-label="Download {{ file.name }}">
+                                            <i class="fas fa-download" aria-hidden="true"></i>Download
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-folder-open" aria-hidden="true"></i>
+                    <h4>No files uploaded yet</h4>
+                    <p>Upload a file to get started</p>
+                    <a href="{{ url_for('upload') }}" class="btn btn-primary">
+                        <i class="fas fa-upload" aria-hidden="true"></i>Upload File
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="fas fa-info-circle"></i>About File History
+                        </h3>
+                        <p class="card-text">
+                            This page shows all the files you have uploaded to the system. You can:
+                        </p>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle"></i>Generate new timetables
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle"></i>Download original files
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle"></i>Track upload history
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="fas fa-cog"></i>Quick Actions
+                        </h3>
+                        <div class="d-grid">
+                            <a href="{{ url_for('upload') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-upload"></i>Upload New File
+                            </a>
+                            <a href="{{ url_for('weather') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-cloud-sun"></i>Check Weather
+                            </a>
+                            <a href="{{ url_for('home') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-home"></i>Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function handleGenerateClick(button, filename) {
+    // Disable the button
+    button.disabled = true;
+    
+    // Show a message
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-success';
+    alertDiv.textContent = 'Generating timetable... Please wait.';
+    button.parentElement.parentElement.parentElement.insertAdjacentElement('beforebegin', alertDiv);
+    
+    // Make the request
+    fetch(`/generate_timetable/${filename}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            // Create a download link
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `timetable_${filename}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            // Update the alert message
+            alertDiv.textContent = 'Timetable generated successfully!';
+            alertDiv.className = 'alert alert-success';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alertDiv.textContent = 'Error generating timetable. Please try again.';
+            alertDiv.className = 'alert alert-error';
+        })
+        .finally(() => {
+            // Remove loading state
+            button.disabled = false;
+            
+            // Remove the alert after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        });
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,594 @@
+{% extends "base.html" %}
+
+{% block title %}Configure Subjects - Timetable Generator{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-light: #818cf8;
+        --secondary-light: #a78bfa;
+        --success-light: #34d399;
+        --danger-light: #f87171;
+        --warning-light: #fbbf24;
+        --info-light: #60a5fa;
+        
+        --glass-bg-light: rgba(255, 255, 255, 0.98);
+        --glass-border-light: rgba(129, 140, 248, 0.2);
+        
+        --gradient-primary-light: linear-gradient(135deg, #818cf8, #a78bfa);
+        --gradient-success-light: linear-gradient(135deg, #34d399, #6ee7b7);
+        --gradient-danger-light: linear-gradient(135deg, #f87171, #fca5a5);
+        
+        --shadow-soft-light: 0 4px 6px -1px rgba(129, 140, 248, 0.2), 0 2px 4px -1px rgba(129, 140, 248, 0.1);
+        --shadow-medium-light: 0 10px 15px -3px rgba(129, 140, 248, 0.2), 0 4px 6px -2px rgba(129, 140, 248, 0.1);
+    }
+
+    .subjects-section {
+        padding: var(--spacing-xl) 0;
+        min-height: calc(100vh - 200px);
+        background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: var(--spacing-xl);
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: var(--spacing-sm);
+        background: var(--gradient-primary-light);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientFlow 3s ease infinite;
+        text-shadow: 0 2px 4px rgba(129, 140, 248, 0.2);
+    }
+
+    .section-description {
+        color: #4b5563;
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+        animation: fadeInUp 0.8s ease-out 0.2s backwards;
+    }
+
+    .subjects-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .subjects-card {
+        background: var(--glass-bg-light);
+        border-radius: 1.5rem;
+        padding: var(--spacing-xl);
+        margin-bottom: var(--spacing-lg);
+        box-shadow: var(--shadow-soft-light);
+        border: 1px solid var(--glass-border-light);
+        transition: all 0.3s ease;
+        animation: slideInUp 0.6s ease-out;
+        backdrop-filter: blur(10px);
+    }
+
+    .subjects-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: var(--shadow-medium-light);
+    }
+
+    .subjects-card.lab-card {
+        border-left: 4px solid var(--success-light);
+        background: linear-gradient(to right, rgba(52, 211, 153, 0.1), var(--glass-bg-light));
+    }
+
+    .subjects-card.no-lab-card {
+        border-left: 4px solid var(--danger-light);
+        background: linear-gradient(to right, rgba(248, 113, 113, 0.1), var(--glass-bg-light));
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: var(--spacing-lg);
+        padding-bottom: var(--spacing-md);
+        border-bottom: 1px solid var(--glass-border-light);
+    }
+
+    .card-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--gradient-primary-light);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-right: var(--spacing-md);
+        box-shadow: var(--shadow-soft-light);
+        animation: pulse 1.5s infinite;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0;
+        font-family: var(--font-heading);
+    }
+
+    .form-group {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: var(--spacing-sm);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+    }
+
+    .form-label i {
+        color: var(--primary-light);
+    }
+
+    .form-control {
+        background: var(--glass-bg-light);
+        border: 1px solid var(--glass-border-light);
+        border-radius: 0.5rem;
+        padding: var(--spacing-sm);
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .form-control:focus {
+        background: white;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .help-text {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-top: var(--spacing-xs);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+    }
+
+    .help-text i {
+        color: var(--primary-light);
+    }
+
+    .subjects-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--spacing-md);
+        margin: var(--spacing-md) 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .subject-item {
+        display: flex;
+        align-items: center;
+        padding: var(--spacing-md);
+        background: var(--glass-bg-light);
+        border-radius: 1rem;
+        transition: all 0.3s ease;
+        border: 1px solid var(--glass-border-light);
+        box-shadow: var(--shadow-soft-light);
+        animation: fadeIn 0.5s ease-out;
+        backdrop-filter: blur(5px);
+    }
+
+    .subject-item:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: var(--shadow-medium-light);
+    }
+
+    .subject-item.lab-item {
+        border-left: 3px solid var(--success-light);
+        background: linear-gradient(to right, rgba(52, 211, 153, 0.1), var(--glass-bg-light));
+    }
+
+    .subject-item.no-lab-item {
+        border-left: 3px solid var(--danger-light);
+        background: linear-gradient(to right, rgba(248, 113, 113, 0.1), var(--glass-bg-light));
+    }
+
+    .subject-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--glass-bg-light);
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-light);
+        margin-right: var(--spacing-md);
+        box-shadow: var(--shadow-soft-light);
+        font-size: 1.25rem;
+        animation: bounce 1s infinite;
+    }
+
+    .subject-content {
+        flex: 1;
+    }
+
+    .subject-name {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: var(--spacing-xs);
+        font-size: 1.1rem;
+    }
+
+    .subject-type {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .subject-type.lab {
+        background: rgba(52, 211, 153, 0.2);
+        color: var(--success-light);
+    }
+
+    .subject-type.no-lab {
+        background: rgba(248, 113, 113, 0.2);
+        color: var(--danger-light);
+    }
+
+    .btn-submit {
+        background: var(--gradient-primary-light);
+        color: white;
+        border: none;
+        padding: var(--spacing-sm) var(--spacing-lg);
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-sm);
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        animation: pulse 1.5s infinite;
+        box-shadow: 0 4px 6px -1px rgba(129, 140, 248, 0.3);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 10px 15px -3px rgba(129, 140, 248, 0.3);
+    }
+
+    .btn-submit i {
+        font-size: 1.25rem;
+    }
+
+    .alert {
+        border-radius: 1rem;
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+        border: none;
+        box-shadow: var(--shadow-soft-light);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        animation: slideInRight 0.5s ease-out;
+        backdrop-filter: blur(5px);
+    }
+
+    .alert i {
+        font-size: 1.5rem;
+    }
+
+    .alert-success {
+        background: rgba(52, 211, 153, 0.2);
+        color: var(--success-light);
+    }
+
+    .alert-danger {
+        background: rgba(248, 113, 113, 0.2);
+        color: var(--danger-light);
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            box-shadow: var(--shadow-soft-light);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-medium-light);
+        }
+        100% {
+            transform: scale(1);
+            box-shadow: var(--shadow-soft-light);
+        }
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-8px);
+        }
+    }
+
+    @keyframes gradientFlow {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .subjects-card {
+            padding: var(--spacing-md);
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .subjects-list {
+            grid-template-columns: 1fr;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="subjects-section">
+    <div class="container">
+        <div class="section-header">
+            <h1 class="section-title">Configure Subjects</h1>
+            <p class="section-description">Set up your subjects and their lab requirements to generate optimized timetables</p>
+        </div>
+
+        <div class="subjects-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('configure_subjects') }}">
+                <!-- Regular Subjects -->
+                <div class="subjects-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h2 class="card-title">Regular Subjects</h2>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="subjects">
+                            <i class="fas fa-list"></i>
+                            Subject Names
+                        </label>
+                        <textarea class="form-control" id="subjects" name="subjects" rows="4" placeholder="Enter subject names (one per line)">{{ subjects|join('\n') }}</textarea>
+                        <p class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Enter one subject name per line
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Lab Subjects -->
+                <div class="subjects-card lab-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h2 class="card-title">Lab Subjects</h2>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="labs">
+                            <i class="fas fa-list"></i>
+                            Lab Names
+                        </label>
+                        <textarea class="form-control" id="labs" name="labs" rows="4" placeholder="Enter lab names (one per line)">{{ labs|join('\n') }}</textarea>
+                        <p class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Enter one lab name per line
+                        </p>
+                    </div>
+                </div>
+
+                <!-- No Lab Subjects -->
+                <div class="subjects-card no-lab-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <h2 class="card-title">Subjects Without Labs</h2>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="no_lab_subjects">
+                            <i class="fas fa-list"></i>
+                            Subject Names
+                        </label>
+                        <textarea class="form-control" id="no_lab_subjects" name="no_lab_subjects" rows="4" placeholder="Enter subject names without labs (one per line)">{{ no_lab_subjects|join('\n') }}</textarea>
+                        <p class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Enter one subject name per line
+                        </p>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-save"></i>
+                    Save Configuration
+                </button>
+            </form>
+
+            <!-- Current Configuration -->
+            <div class="subjects-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h2 class="card-title">Current Configuration</h2>
+                </div>
+                <div class="form-group">
+                    <h3 class="form-label">Regular Subjects</h3>
+                    <ul class="subjects-list">
+                        {% for subject in subjects %}
+                            <li class="subject-item">
+                                <div class="subject-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="subject-content">
+                                    <div class="subject-name">{{ subject }}</div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <h3 class="form-label">Lab Subjects</h3>
+                    <ul class="subjects-list">
+                        {% for lab in labs %}
+                            <li class="subject-item lab-item">
+                                <div class="subject-icon">
+                                    <i class="fas fa-flask"></i>
+                                </div>
+                                <div class="subject-content">
+                                    <div class="subject-name">{{ lab }}</div>
+                                    <div class="subject-type lab">Lab</div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <h3 class="form-label">Subjects Without Labs</h3>
+                    <ul class="subjects-list">
+                        {% for subject in no_lab_subjects %}
+                            <li class="subject-item no-lab-item">
+                                <div class="subject-icon">
+                                    <i class="fas fa-ban"></i>
+                                </div>
+                                <div class="subject-content">
+                                    <div class="subject-name">{{ subject }}</div>
+                                    <div class="subject-type no-lab">No Lab</div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('subjectsForm').addEventListener('submit', function(e) {
+        const subjects = this.querySelector('[name="subjects"]').value.trim();
+        const labs = this.querySelector('[name="labs"]').value.trim();
+        const noLabSubjects = this.querySelector('[name="no_lab_subjects"]').value.trim();
+
+        if (!subjects && !labs && !noLabSubjects) {
+            e.preventDefault();
+            showToast('Please add at least one subject or lab', 'danger');
+            return;
+        }
+
+        showLoading();
+    });
+
+    // Auto-resize textareas
+    document.querySelectorAll('textarea').forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    });
+</script>
+{% endblock %}

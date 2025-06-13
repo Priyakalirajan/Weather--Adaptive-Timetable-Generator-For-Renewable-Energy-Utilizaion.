@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Downloads - Timetable Generator{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">
+                    <i class="fas fa-download me-2"></i>Downloaded Files
+                </h2>
+
+                {% if downloaded_files %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Download Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in downloaded_files %}
+                            <tr>
+                                <td>
+                                    {% if file.name.endswith('.zip') %}
+                                    <i class="fas fa-file-archive text-warning me-2"></i>
+                                    {% else %}
+                                    <i class="fas fa-file-csv text-primary me-2"></i>
+                                    {% endif %}
+                                    {{ file.name }}
+                                </td>
+                                <td>{{ file.downloaded_at }}</td>
+                                <td>
+                                    <a href="{{ url_for('download', filename=file.name) }}" 
+                                       class="btn btn-sm btn-primary">
+                                        <i class="fas fa-download me-1"></i>Download Again
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                    <h4>No files downloaded yet</h4>
+                    <p class="text-muted">Generate a timetable to get started</p>
+                    <a href="{{ url_for('upload') }}" class="btn btn-primary">
+                        <i class="fas fa-calendar-plus me-2"></i>Generate Timetable
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="fas fa-info-circle me-2"></i>About Downloads
+                        </h3>
+                        <p class="card-text">
+                            This page shows all the files you have downloaded from the system. You can:
+                        </p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>Download files again
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>Track download history
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>Access previous timetables
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="fas fa-cog me-2"></i>Quick Actions
+                        </h3>
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('upload') }}" class="btn btn-outline-primary" onclick="console.log('Upload button clicked')">
+                                <i class="fas fa-upload me-2"></i>Upload New File
+                            </a>
+                            <a href="{{ url_for('weather') }}" class="btn btn-outline-primary" onclick="console.log('Weather button clicked')">
+                                <i class="fas fa-cloud-sun me-2"></i>Check Weather
+                            </a>
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-primary" onclick="console.log('Home button clicked')">
+                                <i class="fas fa-home me-2"></i>Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table thead {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.table th, .table td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+}
+</style>
+{% endblock %} 

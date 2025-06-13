@@ -1,0 +1,500 @@
+{% extends "base.html" %}
+
+{% block title %}Weather-Based Timetable Generator{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #3498db;
+        --secondary-color: #2ecc71;
+        --accent-color: #e74c3c;
+        --dark-color: #2c3e50;
+        --light-color: #ecf0f1;
+        --text-color: #333;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text-color);
+        background-color: #f5f7fa;
+        line-height: 1.6;
+    }
+
+    /* Header Styles */
+    .main-header {
+        background-color: white;
+        box-shadow: var(--box-shadow);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .logo span {
+        color: var(--secondary-color);
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: var(--spacing-xl) 0;
+        position: relative;
+        overflow: hidden;
+        margin-top: calc(-1 * var(--spacing-lg));
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover;
+        opacity: 0.1;
+        z-index: 0;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 var(--spacing-md);
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: var(--spacing-md);
+        line-height: 1.2;
+        background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: var(--spacing-lg);
+        opacity: 0.9;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: var(--spacing-sm);
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .hero-buttons .btn {
+        padding: var(--spacing-sm) var(--spacing-lg);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 2rem;
+    }
+
+    .hero-image {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-image img {
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        transform: perspective(1000px) rotateY(-5deg);
+        transition: var(--transition);
+    }
+
+    .hero-image img:hover {
+        transform: perspective(1000px) rotateY(0deg);
+    }
+
+    /* Features Section */
+    .features-section {
+        padding: var(--spacing-xl) 0;
+        background-color: var(--light-color);
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 4rem;
+        position: relative;
+    }
+
+    .section-title h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+    }
+
+    .section-title p {
+        font-size: 1.1rem;
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .feature-card {
+        text-align: center;
+        padding: var(--spacing-lg);
+        height: 100%;
+        background: var(--glass-bg);
+        border-radius: 1rem;
+        box-shadow: var(--shadow-soft);
+        transition: all 0.3s ease;
+        border: 1px solid var(--glass-border);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-medium);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto var(--spacing-md);
+        color: white;
+        font-size: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: var(--spacing-sm);
+        color: var(--dark-color);
+        font-family: var(--font-heading);
+    }
+
+    .feature-description {
+        color: #666;
+        margin-bottom: var(--spacing-md);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* Dashboard Section */
+    .dashboard-section {
+        padding: var(--spacing-xl) 0;
+        background-color: var(--light-color);
+    }
+
+    .dashboard-card {
+        background: var(--glass-bg);
+        border-radius: 1rem;
+        box-shadow: var(--shadow-soft);
+        padding: var(--spacing-lg);
+        height: 100%;
+        transition: all 0.3s ease;
+        border: 1px solid var(--glass-border);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-medium);
+    }
+
+    .dashboard-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--gradient-primary);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: var(--spacing-md);
+        transition: all 0.3s ease;
+    }
+
+    .dashboard-card:hover .dashboard-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .dashboard-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: var(--spacing-sm);
+        color: var(--dark-color);
+        font-family: var(--font-heading);
+    }
+
+    .dashboard-description {
+        color: #666;
+        margin-bottom: var(--spacing-md);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        padding: var(--spacing-xl) 0;
+        background: var(--gradient-primary);
+        color: white;
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: var(--spacing-lg);
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: var(--spacing-xs);
+        font-family: var(--font-heading);
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+        
+        .feature-card,
+        .dashboard-card {
+            padding: var(--spacing-md);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+<div class="dashboard-section">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <h1 class="display-4 fw-bold mb-3" data-aos="fade-up">
+                    Welcome, {{ current_user.username }}!
+                </h1>
+                <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">
+                    Manage your timetable generation and weather-based scheduling
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="dashboard-card">
+                    <div class="dashboard-icon">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <h3 class="dashboard-title">Upload Schedule</h3>
+                    <p class="dashboard-description">Upload your schedule data in CSV format for processing</p>
+                    <a href="{{ url_for('upload') }}" class="btn btn-primary w-100">Upload Now</a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="dashboard-card">
+                    <div class="dashboard-icon">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                    <h3 class="dashboard-title">Weather Forecast</h3>
+                    <p class="dashboard-description">Check current and forecasted weather conditions</p>
+                    <a href="{{ url_for('weather') }}" class="btn btn-primary w-100">View Weather</a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="dashboard-card">
+                    <div class="dashboard-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h3 class="dashboard-title">Configure Subjects</h3>
+                    <p class="dashboard-description">Set up your subjects and lab configurations</p>
+                    <a href="{{ url_for('configure_subjects') }}" class="btn btn-primary w-100">Configure</a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+                <div class="dashboard-card">
+                    <div class="dashboard-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3 class="dashboard-title">Downloads</h3>
+                    <p class="dashboard-description">Access your generated timetables and reports</p>
+                    <a href="{{ url_for('downloads') }}" class="btn btn-primary w-100">View Downloads</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="stats-section rounded" data-aos="fade-up">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-number">100%</div>
+                                <div class="stat-label">Weather Accuracy</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-number">24/7</div>
+                                <div class="stat-label">Real-time Updates</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-number">1000+</div>
+                                <div class="stat-label">Institutions Served</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 hero-content" data-aos="fade-right">
+                <h1 class="hero-title">Weather-Based Timetable Generator</h1>
+                <p class="hero-subtitle">Optimize your institution's schedule based on real-time weather conditions. Maximize learning outcomes with intelligent scheduling.</p>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">Get Started</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">Login</a>
+                </div>
+            </div>
+            <div class="col-lg-6 hero-image" data-aos="fade-left">
+                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Timetable Generator" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="container">
+        <div class="section-title" data-aos="fade-up">
+            <h2>Key Features</h2>
+            <p>Discover how our weather-based timetable generator can transform your scheduling process</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                    <h3 class="feature-title">Weather Integration</h3>
+                    <p class="feature-description">Real-time weather data integration for optimal scheduling decisions.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="feature-title">Smart Scheduling</h3>
+                    <p class="feature-description">Intelligent algorithms that adapt to weather conditions automatically.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3 class="feature-title">PDF Export</h3>
+                    <p class="feature-description">Export your timetables in professional PDF format instantly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Weather Accuracy</div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Real-time Updates</div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-card">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Institutions Served</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add animation on scroll
+    document.addEventListener('DOMContentLoaded', function() {
+        const elements = document.querySelectorAll('.feature-card, .dashboard-card, .stat-card');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        });
+
+        elements.forEach(element => {
+            observer.observe(element);
+        });
+    });
+</script>
+{% endblock %}

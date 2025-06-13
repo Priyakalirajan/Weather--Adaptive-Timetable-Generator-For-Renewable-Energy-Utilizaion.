@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Weather Forecast - Timetable Generator{% endblock %}
+
+{% block content %}
+<div class="page-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card main-card">
+                    <div class="card-body">
+                        <div class="text-center mb-5">
+                            <h1 class="display-5 fw-bold mb-3">
+                                <i class="fas fa-cloud-sun me-2"></i>Weather Forecast
+                            </h1>
+                            <p class="lead text-muted">Madurai, Tamil Nadu</p>
+                        </div>
+                        
+                        {% if weather_data %}
+                        <div class="weather-table mb-5">
+                            <div class="table-responsive">
+                                {{ weather_data | safe }}
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <a href="{{ url_for('generate_timetable', filename='weather_forecast.csv') }}" class="btn btn-primary btn-lg px-5" id="generateTimetableBtn">
+                                <i class="fas fa-calendar-plus me-2"></i>Generate Timetable
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-light text-center">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Unable to fetch weather data. Please try again later.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row g-4 mt-4">
+                    <div class="col-md-6">
+                        <div class="card info-card">
+                            <div class="card-body">
+                                <h3 class="card-title">
+                                    <i class="fas fa-info-circle me-2"></i>Weather Impact
+                                </h3>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item">
+                                        <i class="fas fa-sun me-2"></i>Clear: Computer Lab activities
+                                    </div>
+                                    <div class="list-group-item">
+                                        <i class="fas fa-cloud me-2"></i>Cloudy: Regular Class activities
+                                    </div>
+                                    <div class="list-group-item">
+                                        <i class="fas fa-cloud-rain me-2"></i>Rainy: Indoor activities
+                                    </div>
+                                    <div class="list-group-item">
+                                        <i class="fas fa-bolt me-2"></i>Stormy: No outdoor activities
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card info-card">
+                            <div class="card-body">
+                                <h3 class="card-title">
+                                    <i class="fas fa-clock me-2"></i>Schedule Details
+                                </h3>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item">
+                                        <i class="fas fa-clock me-2"></i>Time Slots: 9:00 AM - 4:00 PM
+                                    </div>
+                                    <div class="list-group-item">
+                                        <i class="fas fa-utensils me-2"></i>Lunch Break: 12:00 PM - 1:00 PM
+                                    </div>
+                                    <div class="list-group-item">
+                                        <i class="fas fa-book me-2"></i>Subjects: PAD, ACD, CN, SE, exsel, FIE
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-section {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+}
+
+.main-card, .info-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: white;
+}
+
+.weather-table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.table thead {
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.table th {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 2px solid #e9ecef;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.table tbody tr {
+    border-bottom: 2px solid #e9ecef;
+}
+
+.table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table tbody tr:hover td {
+    background-color: #f8f9fa;
+}
+
+.list-group-item {
+    border: none;
+    padding: 1rem;
+    background: transparent;
+}
+
+.list-group-item i {
+    color: #6c757d;
+    width: 20px;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    transform: translateY(-2px);
+}
+
+.alert-light {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    color: #495057;
+}
+
+@media (max-width: 768px) {
+    .page-section {
+        padding: 3rem 0;
+    }
+
+    .table td, .table th {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add weather condition classes to cells
+    const cells = document.querySelectorAll('.table td');
+    cells.forEach(cell => {
+        const text = cell.textContent.trim().toLowerCase();
+        if (text.includes('clear')) {
+            cell.innerHTML = `<div class="weather-condition condition-clear">
+                <i class="fas fa-sun me-2"></i>${text}
+            </div>`;
+        } else if (text.includes('cloudy')) {
+            cell.innerHTML = `<div class="weather-condition condition-cloudy">
+                <i class="fas fa-cloud me-2"></i>${text}
+            </div>`;
+        } else if (text.includes('rainy')) {
+            cell.innerHTML = `<div class="weather-condition condition-rainy">
+                <i class="fas fa-cloud-rain me-2"></i>${text}
+            </div>`;
+        } else if (text.includes('stormy')) {
+            cell.innerHTML = `<div class="weather-condition condition-stormy">
+                <i class="fas fa-bolt me-2"></i>${text}
+            </div>`;
+        }
+    });
+
+    // Handle generate timetable button click
+    const generateBtn = document.getElementById('generateTimetableBtn');
+    if (generateBtn) {
+        generateBtn.addEventListener('click', function(e) {
+            this.classList.add('disabled');
+            this.textContent = 'Generating Timetable...';
+        });
+    }
+});
+</script>
+{% endblock %}

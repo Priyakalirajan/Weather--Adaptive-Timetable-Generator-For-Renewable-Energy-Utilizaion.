@@ -1,0 +1,205 @@
+:root {
+    --primary: #5D9CEC;
+    --secondary: #A0D9D9;
+    --background: #F5F7FA;
+    --accent: #FF7B54;
+    --text: #4A4A4A;
+    --success: #48BB78;
+    --warning: #ED8936;
+    --danger: #F56565;
+}
+
+/* Base styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: var(--text);
+    background-color: var(--background);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.dashboard-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Button styles */
+.btn {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0.9;
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Form and Card styles */
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(93,156,236,0.25);
+    border-color: var(--primary);
+}
+
+/* Enhanced Card Styling */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: white;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.card-header {
+    background-color: white;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    font-weight: 600;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px 12px 0 0 !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+}
+
+.card-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background-color: rgba(72, 187, 120, 0.1);
+    color: var(--success);
+}
+
+.status-pending {
+    background-color: rgba(237, 137, 54, 0.1);
+    color: var(--warning);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-footer {
+    background-color: rgba(245, 247, 250, 0.8);
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.card-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.card-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Card Variations */
+.card-primary {
+    border-left-color: var(--primary);
+}
+
+.card-success {
+    border-left-color: var(--success);
+}
+
+.card-warning {
+    border-left-color: var(--warning);
+}
+
+.card-danger {
+    border-left-color: var(--danger);
+}
+
+/* Alert and Notification styles */
+.alert {
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    border: none;
+}
+
+.alert-success {
+    background-color: rgba(72, 187, 120, 0.1);
+    color: var(--success);
+}
+
+.alert-info {
+    background-color: rgba(93, 156, 236, 0.1);
+    color: var(--primary);
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--accent);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+/* Table styles */
+.table th {
+    background-color: #f8f9fa;
+}
+
+/* Navbar styles */
+.navbar-brand {
+    font-weight: 700;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}

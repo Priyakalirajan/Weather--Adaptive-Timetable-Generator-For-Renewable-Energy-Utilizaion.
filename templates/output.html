@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block title %}Generated Timetable - Timetable Generator{% endblock %}
+
+{% block content %}
+<div class="page-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card main-card">
+                    <div class="card-body text-center">
+                        <div class="header-section mb-5">
+                            <h1 class="display-5 fw-bold mb-3">
+                                <i class="fas fa-calendar-check me-2"></i>Generated Timetable
+                            </h1>
+                            <p class="lead text-muted">Your weather-optimized schedule is ready</p>
+                            <div class="alert alert-primary">
+                                <i class="fas fa-info-circle me-2"></i>Now downloading as PDF format with daily lab sessions
+                            </div>
+                        </div>
+                        
+                        <div class="timetable-container mb-5">
+                            <div class="table-responsive">
+                                <table class="table timetable-table">
+                                    <thead class="timetable-header">
+                                        <tr>
+                                            <th class="time-col">Time</th>
+                                            {% for day in timetable.index %}
+                                            <th class="day-col">{{ day }}</th>
+                                            {% endfor %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for time_slot in timetable.columns %}
+                                        <tr>
+                                            <td class="time-slot">{{ time_slot }}</td>
+                                            {% for day in timetable.index %}
+                                            {% set activity = timetable.loc[day, time_slot] %}
+                                            <td class="activity-cell {% if 'Lab' in activity %}lab-session{% endif %} 
+                                                {% if 'Lunch' in activity %}lunch-break{% endif %}">
+                                                <div class="activity-content">
+                                                    {% if 'Lab' in activity %}
+                                                    <i class="fas fa-flask me-2"></i>
+                                                    {% elif 'Lunch' in activity %}
+                                                    <i class="fas fa-utensils me-2"></i>
+                                                    {% else %}
+                                                    <i class="fas fa-book me-2"></i>
+                                                    {% endif %}
+                                                    {{ activity }}
+                                                </div>
+                                            </td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <a href="{{ url_for('download', filename=filename) }}" class="btn btn-primary btn-lg px-5 me-3">
+                                <i class="fas fa-file-pdf me-2"></i>Download PDF
+                            </a>
+                            <a href="{{ url_for('home') }}" class="btn btn-outline-primary btn-lg px-5">
+                                <i class="fas fa-home me-2"></i>Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mt-4">
+                    <div class="col-md-6">
+                        <div class="card info-card">
+                            <div class="card-body">
+                                <h3 class="card-title">
+                                    <i class="fas fa-info-circle me-2"></i>Timetable Legend
+                                </h3>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item">
+                                        <i class="fas fa-flask text-primary me-2"></i>Lab Sessions
+                                    </div>
+                                    <div class="list-group-item">
+                                        <i class="fas fa-book text-success me-2"></i>Regular Classes
+                                    </div>
+                                    <div class="list-group-item">
+                                        <i class="fas fa-utensils text-warning me-2"></i>Lunch Break
+                                    </div>
+                                    <div class="list-group-item">
+                                        <i class="fas fa-cloud-sun text-info me-2"></i>Weather-Adapted
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card info-card">
+                            <div class="card-body">
+                                <h3 class="card-title">
+                                    <i class="fas fa-cog me-2"></i>Actions
+                                </h3>
+                                <div class="d-grid gap-2">
+                                    <a href="{{ url_for('weather') }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-cloud-sun me-2"></i>View Weather Data
+                                    </a>
+                                    <a href="{{ url_for('upload') }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-upload me-2"></i>Generate New Timetable
+                                    </a>
+                                    <a href="{{ url_for('view') }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-history me-2"></i>View History
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-section {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+}
+
+.main-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    background: white;
+    transition: transform 0.3s ease;
+}
+
+.main-card:hover {
+    transform: translateY(-5px);
+}
+
+.header-section {
+    position: relative;
+    padding-bottom: 2rem;
+}
+
+.header-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, #6c757d, #adb5bd);
+    border-radius: 3px;
+}
+
+.timetable-container {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    margin: 0 auto;
+    max-width: 100%;
+    border: 1px solid rgba(0,0,0,0.05);
+    padding: 20px;
+}
+
+.timetable-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0 auto;
+}
+
+.timetable-header {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    color: white;
+}
+
+.timetable-header th {
+    padding: 1.2rem;
+    text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+}
+
+.time-col {
+    width: 100px;
+    background: #495057;
+}
+
+.day-col {
+    min-width: 150px;
+}
+
+.time-slot {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    padding: 1rem;
+    text-align: center;
+    border-right: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.activity-cell {
+    padding: 1rem;
+    text-align: center;
+    vertical-align: middle;
+    border-right: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.activity-cell:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.activity-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    height: 100%;
+}
+
+.lab-session {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    color: #1976d2;
+    border-left: 3px solid #1976d2;
+}
+
+.lab-session .activity-content {
+    background: rgba(25, 118, 210, 0.1);
+}
+
+.lunch-break {
+    background: linear-gradient(135deg, #fff8e1 0%, #ffe082 100%);
+    color: #f57f17;
+    border-left: 3px solid #f57f17;
+}
+
+.lunch-break .activity-content {
+    background: rgba(245, 127, 23, 0.1);
+}
+
+/* Subject-specific styling */
+.activity-cell:not(.lab-session):not(.lunch-break) {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    color: #388e3c;
+    border-left: 3px solid #388e3c;
+}
+
+.activity-cell:not(.lab-session):not(.lunch-break) .activity-content {
+    background: rgba(56, 142, 60, 0.1);
+}
+
+.action-buttons {
+    margin-top: 2rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    border: none;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    padding: 0.8rem 2rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.btn-outline-primary {
+    color: #6c757d;
+    border-color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    border-color: #6c757d;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.info-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-title {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.list-group-item {
+    border: none;
+    padding: 1rem;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.list-group-item i {
+    width: 20px;
+    text-align: center;
+}
+
+.alert-primary {
+    background: rgba(108, 117, 125, 0.2);
+    border-color: rgba(108, 117, 125, 0.3);
+    color: #495057;
+}
+
+@media (max-width: 768px) {
+    .page-section {
+        padding: 3rem 0;
+    }
+    
+    .timetable-header th {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .time-slot, .activity-cell {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects and tooltips
+    const activities = document.querySelectorAll('.activity-cell');
+    activities.forEach(activity => {
+        activity.addEventListener('mouseenter', function() {
+            this.style.zIndex = '10';
+        });
+        activity.addEventListener('mouseleave', function() {
+            this.style.zIndex = '1';
+        });
+    });
+});
+</script>
+{% endblock %}
